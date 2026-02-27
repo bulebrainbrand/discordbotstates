@@ -65,6 +65,7 @@ const ResultCard = class {
             if (text === "timeout") {
                 showDesc ??= timeoutDesc
                 showMain ??= timeoutMain
+                showMain ??= onNotOkStatus
             }
             else {
                 showStatus ??= onNotOkStatus
@@ -75,9 +76,7 @@ const ResultCard = class {
         if (showMain) mainEle.textContent = showMain
         if (showDesc) descEle.textContent = showDesc
         if (showStatus) {
-            this.element.classList.remove("success")
-            this.element.classList.remove("pending")
-            this.element.classList.remove("failed")
+            this.element.classList.remove("success", "pending", "failed")
             this.element.classList.add(showStatus)
         }
     }
