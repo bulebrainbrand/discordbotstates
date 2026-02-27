@@ -7,7 +7,7 @@ const getDiscordBotStates = async () => {
 
 const fetchData = async (path, isText) => {
     const abortController = new AbortController()
-    const timeoutId = setTimeout(() => abortController.abort(), 2000)
+    const timeoutId = setTimeout(() => abortController.abort(), 5000)
     try {
         const res = await fetch(path, { signal: abortController.signal })
         clearTimeout(timeoutId)
@@ -65,7 +65,7 @@ const ResultCard = class {
             if (text === "timeout") {
                 showDesc ??= timeoutDesc
                 showMain ??= timeoutMain
-                showMain ??= onNotOkStatus
+                showStatus ??= onNotOkStatus
             }
             else {
                 showStatus ??= onNotOkStatus
