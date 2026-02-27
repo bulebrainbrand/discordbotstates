@@ -8,15 +8,15 @@ const getDiscordBotStates = async () => {
 const fetchData = async (path,isText) => {
     try{
       const res = await fetch(path)
+      if (res.ok) {
+        return { ok: true, text: isText?await res.text():await res.json() }
       }
+      else {
+        return { ok: false, text: `${res.status} ${res.statusText}` }
+      }
+    }
     catch(e){
       return {ok:false,text:e.message,isCors:true}
-      }
-    if (res.ok) {
-        return { ok: true, text: isText?await res.text():await res.json() }
-    }
-    else {
-        return { ok: false, text: `${res.status} ${res.statusText}` }
     }
 }
 
