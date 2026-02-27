@@ -99,7 +99,7 @@ const databaseConnect = new ResultCard(
         this.changeCardStatus({
           ok:ok && text.success,
           onOkDesc:"データベースに正常に接続しています",
-          onNotOkDesc:text.success?"サーバーは稼働していますが、データベースには接続されていないようです":"サーバーが稼働していないか、一時的に取得に失敗しています",
+          onNotOkDesc:ok?"サーバーは稼働していますが、データベースには接続されていないようです":"サーバーが稼働していないか、一時的に取得に失敗しています",
           onOkMain:"success",
         })
     }
