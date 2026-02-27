@@ -19,6 +19,7 @@ const fetchData = async (path, isText) => {
         }
     }
     catch (e) {
+        if (e.name === "AbortError") return { ok: false, text: "timeout" };
         return { ok: false, text: e.message }
     }
 }
@@ -49,7 +50,7 @@ const ResultCard = class {
             status: "pending"
         })
     }
-    changeCardStatus({ main, desc, status, ok, onOkStatus = "success", onNotOkStatus = "failed", onOkDesc, onNotOkDesc, onOkMain = "success", onNotOkMain = "failed" }) {
+    changeCardStatus({ main, desc, status, ok, onOkStatus = "success", onNotOkStatus = "failed", onOkDesc, onNotOkDesc, onOkMain = "success", onNotOkMain = "failed", text, timeoutMain = "timeout", timeoutDesc = "接続に時間がかかりすぎたので中止しました" }) {
         const mainEle = this.element.querySelector(".main-text")
         const descEle = this.element.querySelector(".description")
         let showStatus = status
@@ -61,9 +62,15 @@ const ResultCard = class {
             showMain ??= onOkMain
         }
         else if (ok === false) {
-            showStatus ??= onNotOkStatus
-            showDesc ??= onNotOkDesc
-            showMain ??= onNotOkMain
+            if (text === "timeout") {
+                showDesc ??= timeoutDesc
+                showMain ??= timeoutMain
+            }
+            else {
+                showStatus ??= onNotOkStatus
+                showDesc ??= onNotOkDesc
+                showMain ??= onNotOkMain
+            }
         }
         if (showMain) mainEle.textContent = showMain
         if (showDesc) descEle.textContent = showDesc
@@ -81,6 +88,7 @@ const runningBot = new ResultCard(
     function ({ ok, text }) {
         this.changeCardStatus({
             ok,
+            text,
             onOkDesc: "ボットは稼働中です",
             onNotOkDesc: "ボットは停止中です...",
         })
@@ -91,6 +99,7 @@ const uptime = new ResultCard(
     function ({ ok, text }) {
         this.changeCardStatus({
             ok,
+            text,
             onOkDesc: "ボットの稼働開始時刻を示します",
             onNotOkDesc: "ボットの稼働開始時刻の取得に失敗しました",
             onOkMain: new Date(Number(text)).toLocaleString(),
@@ -102,6 +111,7 @@ const databaseConnect = new ResultCard(
     function ({ ok, text }) {
         this.changeCardStatus({
             ok: ok && text.success,
+            text,
             onOkDesc: "データベースに正常に接続しています",
             onNotOkDesc: ok ? "サーバーは稼働していますが、データベースには接続されていないようです" : "サーバーが稼働していないか、一時的に取得に失敗しています",
             onOkMain: "success",
@@ -114,6 +124,7 @@ const databaseSize = new ResultCard(
     function ({ ok, text }) {
         this.changeCardStatus({
             ok: ok && text.success,
+            text,
             onOkDesc: "データベースのサイズです。マックス512MBです",
             onNotOkDesc: "取得に失敗しました",
             onOkMain: `${text?.megaByte}MB`,
