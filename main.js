@@ -1,8 +1,13 @@
-const getDiscordBotStates = async () => {
+const fetchUptime = async () => {
     const apiRootPath = "https://discord-bot-kyt2.onrender.com/api"
     const upTimePath = apiRootPath + "/uptime"
+    return await fetchData(upTimePath, true)
+}
+
+const fetchConnectDb = async () => {
+    const apiRootPath = "https://discord-bot-kyt2.onrender.com/api"
     const connectDbPath = apiRootPath + "/connectDb"
-    return { upTime: await fetchData(upTimePath, true), connectDb: await fetchData(connectDbPath, false) }
+    return await fetchData(connectDbPath, false)
 }
 
 const fetchData = async (path, isText) => {
@@ -27,15 +32,26 @@ const fetchData = async (path, isText) => {
 
 
 const update = async () => {
+    await Promise.all([
+        updateServerCard(),
+        updateDatadaseCard()
+    ])
+}
+
+const updateServerCard = async () => {
     runningBot.toPending()
     uptime.toPending()
+    const data = await fetchUptime()
+    runningBot.showResult(data)
+    uptime.showResult(data)
+}
+
+const updateDatadaseCard = async () => {
     databaseSize.toPending()
     databaseConnect.toPending()
-    const data = await getDiscordBotStates()
-    runningBot.showResult(data.upTime)
-    uptime.showResult(data.upTime)
-    databaseSize.showResult(data.connectDb)
-    databaseConnect.showResult(data.connectDb)
+    const data = await fetchConnectDb()
+    databaseSize.showResult(data)
+    databaseConnect.showResult(data)
 }
 
 const ResultCard = class {
